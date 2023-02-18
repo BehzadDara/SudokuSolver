@@ -18,7 +18,7 @@ namespace SudokuSolver
             #endregion
 
             #region Solve
-            var result = FindSolution(sudoku, Tuple.Create(0, 0));
+            var result = FindSolution(sudoku, Tuple.Create(0, 0), 1);
             #endregion
 
             #region End
@@ -31,36 +31,33 @@ namespace SudokuSolver
 
         #region Solution
 
-        private static int[][] FindSolution(int[][] sudoku, Tuple<int, int> position)
+        private static int[][] FindSolution(int[][] sudoku, Tuple<int, int> position, int k)
         {
             if (IsAnswer(sudoku))
                 return sudoku;
 
             if (sudoku[position.Item1][position.Item2] == 0)
             {
-                var k = 1;
+                if (k == 10)
+                    return sudoku;
 
-                while (k <= 9)
+                if (IsSafeChoice(sudoku, position, k))
                 {
-                    if (IsSafeChoice(sudoku, position, k))
-                    {
-                        sudoku[position.Item1][position.Item2] = k;
+                    sudoku[position.Item1][position.Item2] = k;
 
-                        var result = FindSolution(sudoku, NextPosition(position));
-                        if (IsAnswer(result))
-                            return result;
+                    var result = FindSolution(sudoku, NextPosition(position), 1);
+                    if (IsAnswer(result))
+                        return result;
 
-                        sudoku[position.Item1][position.Item2] = 0;
-                    }
-
-                    k++;
+                    sudoku[position.Item1][position.Item2] = 0;
                 }
 
-                return sudoku;
+                return FindSolution(sudoku, position, k + 1);
+
             }
             else
             {
-                return FindSolution(sudoku, NextPosition(position));
+                return FindSolution(sudoku, NextPosition(position), 1);
             }
 
         }
